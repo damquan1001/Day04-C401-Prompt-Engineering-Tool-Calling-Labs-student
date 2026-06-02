@@ -14,6 +14,8 @@ def send_telegram(text: str = "", confirmed: bool = False) -> dict[str, Any]:
             "tool": "send_telegram",
             "status": "needs_confirmation",
             "message": "Only send after the user explicitly confirms.",
+            "question": "Do you want me to send this message to Telegram?",
+            "awaiting_user": True,
         }
     try:
         token = os.getenv("TELEGRAM_BOT_TOKEN")
