@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import os
+import re
+import time
 from typing import Any
 
 from providers.base import ModelResponse, ToolCall
@@ -73,7 +75,7 @@ class GeminiProvider:
         self,
         *,
         api_key_env: str = "GEMINI_API_KEY",
-        default_model: str = "gemini-3.5-flash",
+        default_model: str = "gemini-3.1-flash-lite",
     ) -> None:
         self.api_key_env = api_key_env
         self.default_model = default_model
@@ -106,11 +108,26 @@ class GeminiProvider:
             config_kwargs["tools"] = [types.Tool(function_declarations=declarations)]
 
         client = genai.Client(api_key=api_key)
-        resp = client.models.generate_content(
-            model=model or self.default_model,
-            contents=contents,
-            config=types.GenerateContentConfig(**config_kwargs),
-        )
+        selected_model = model or self.default_model
+        for attempt in range(4):
+            try:
+                resp = client.models.generate_content(
+                    model=selected_model,
+                    contents=contents,
+                    config=types.GenerateContentConfig(**config_kwargs),
+                )
+                break
+            except Exception as exc:
+                message = str(exc)
+                if "RESOURCE_EXHAUSTED" not in message and "429" not in message:
+                    raise
+                if attempt == 3:
+                    raise
+                retry_match = re.search(r"retryDelay': '(\d+)s|retry in ([0-9.]+)s", message, re.IGNORECASE)
+                delay = 45.0
+                if retry_match:
+                    delay = float(next(group for group in retry_match.groups() if group))
+                time.sleep(min(delay + 2.0, 75.0))
 
         text_parts: list[str] = []
         calls: list[ToolCall] = []
