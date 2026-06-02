@@ -125,3 +125,84 @@ tools:
               summary: {type: string}
         strict: {type: boolean, default: false, description: "When true, require tier_1-like evidence for every item."}
       required: [items]
+
+  - name: extract_key_points
+    description: "Extract the most important points from text or already-collected items. Use when the user asks for takeaways, highlights, or a compact summary without fetching new sources."
+    parameters:
+      type: object
+      properties:
+        text: {type: string, default: "", description: "Source text already present in the conversation or input."}
+        items:
+          type: array
+          default: []
+          description: "Optional collected items to analyze together with text."
+          items:
+            type: object
+            properties:
+              title: {type: string}
+              summary: {type: string}
+              content: {type: string}
+              url: {type: string}
+              source: {type: string}
+        max_points: {type: integer, default: 5, description: "Maximum number of key points to return."}
+
+  - name: compare_sources
+    description: "Compare two or more already-collected sources for overlap and differences. Use for source triage, contradiction checks, or synthesis planning."
+    parameters:
+      type: object
+      properties:
+        items:
+          type: array
+          default: []
+          description: "Collected source items to compare."
+          items:
+            type: object
+            properties:
+              title: {type: string}
+              summary: {type: string}
+              content: {type: string}
+              url: {type: string}
+              source: {type: string}
+        question: {type: string, default: "", description: "Optional comparison focus or question."}
+        max_sources: {type: integer, default: 4, description: "Maximum number of sources to compare."}
+
+  - name: reference_builder
+    description: "Format already-collected source items into citations or bibliography entries. Use for APA, MLA, Chicago, IEEE, BibTeX, or plain references."
+    parameters:
+      type: object
+      properties:
+        items:
+          type: array
+          default: []
+          description: "Collected source items to format."
+          items:
+            type: object
+            properties:
+              title: {type: string}
+              authors:
+                type: array
+                items: {type: string}
+              author: {type: string}
+              year: {type: string}
+              published: {type: string}
+              updated: {type: string}
+              date: {type: string}
+              source: {type: string}
+              publisher: {type: string}
+              journal: {type: string}
+              doi: {type: string}
+              url: {type: string}
+              link: {type: string}
+        style: {type: string, enum: [apa, mla, chicago, ieee, bibtex, plain], default: "apa", description: "Citation style."}
+        include_urls: {type: boolean, default: true, description: "Include URLs in non-BibTeX output."}
+        title: {type: string, default: "", description: "Optional heading for the reference block."}
+
+  - name: source_credibility
+    description: "Score how credible a source URL or source label looks before publishing. Use for quick source triage without fetching the page."
+    parameters:
+      type: object
+      properties:
+        url: {type: string, default: "", description: "Source URL to inspect."}
+        source: {type: string, default: "", description: "Optional source label if no URL is available."}
+        title: {type: string, default: "", description: "Optional title or context."}
+        evidence_text: {type: string, default: "", description: "Optional excerpt or context text for the source."}

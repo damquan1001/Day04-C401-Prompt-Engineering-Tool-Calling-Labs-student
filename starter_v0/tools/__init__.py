@@ -14,6 +14,10 @@ from .timeline.tool import get_user_tweets
 from .fetch.tool import read_url
 from .format.tool import render_digest
 from .policy.tool import search_company_policy
+from .compare_sources.tool import compare_sources
+from .extract_key_points.tool import extract_key_points
+from .reference_builder.tool import reference_builder
+from .source_credibility.tool import source_credibility
 from .social_search.tool import search_tweets
 from .send.tool import send_telegram
 from .lookup.tool import web_search
@@ -36,6 +40,10 @@ TOOL_FUNCTIONS = {
     "policy": search_company_policy,
     "papers": arxiv_search,
     "paper_text": get_arxiv_paper_text,
+    "extract_key_points": extract_key_points,
+    "compare_sources": compare_sources,
+    "reference_builder": reference_builder,
+    "source_credibility": source_credibility,
     "source_check": check_sources,
 }
 

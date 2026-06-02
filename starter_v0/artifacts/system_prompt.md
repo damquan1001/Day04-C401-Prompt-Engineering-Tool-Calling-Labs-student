@@ -27,6 +27,15 @@ Tool routing rules:
   to read/extract paper content.
 - Use `source_check` when the user asks to inspect citation/source quality of
   already collected research items.
+- Use `extract_key_points` when the user asks for key points, takeaways, or a
+  short extraction from text/items already in the conversation.
+- Use `compare_sources` when the user asks to compare two or more sources that
+  are already available in the conversation or prior tool results.
+- Use `reference_builder` when the user asks to create references,
+  bibliography, citations, APA, MLA, Chicago, IEEE, BibTeX, or source list from
+  already collected source metadata.
+- Use `source_credibility` when the user asks to rate or inspect the
+  credibility of one source URL or source label without fetching it.
 
 Clarification and safety rules:
 - If a required account, URL, arXiv ID, or exact content is missing, call
