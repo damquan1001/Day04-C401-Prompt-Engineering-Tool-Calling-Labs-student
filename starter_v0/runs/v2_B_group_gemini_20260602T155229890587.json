@@ -1,0 +1,912 @@
+{
+  "run_id": "v2_B_group_gemini_20260602T155229890587",
+  "version": "v2",
+  "artifact_version": "v2+p16836f399532+t1fbf4d1ad0ed",
+  "prompt_hash": "16836f39953208d94089f59e309e29c9329149d40da4988a09528706d967e5d7",
+  "tools_hash": "1fbf4d1ad0edbf82c8113a011cac5edb325f872cc53a25cd746556ce242b023f",
+  "phase": "B",
+  "suite": "group",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash",
+  "system_prompt": "D:\\AI20K\\day4\\team\\Day04-C401-Prompt-Engineering-Tool-Calling-Labs-student\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "D:\\AI20K\\day4\\team\\Day04-C401-Prompt-Engineering-Tool-Calling-Labs-student\\starter_v0\\artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_group.json",
+  "dataset_id": "day04_v2_research_group",
+  "dataset_role": "group",
+  "description": "Eval nhóm cho 4 tool mới: extract_key_points, compare_sources, reference_builder, source_credibility. Mỗi case phase=B, một tool call mong đợi (không chain lookup/fetch). 5 single-turn + 5 multi-turn.",
+  "generated_at": "2026-06-02T15:52:29",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 10,
+    "provider_error_cases": 0,
+    "passed_cases": 10,
+    "case_accuracy": 1.0,
+    "tool_routing_accuracy": 1.0,
+    "argument_accuracy": 1.0,
+    "multiturn_accuracy": 1.0,
+    "failure_counts": {},
+    "observed_mismatch_counts": {}
+  },
+  "results": [
+    {
+      "id": "G01_extract_key_points_text",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "extract_from_pasted_text",
+        "difficulty": "easy",
+        "what_it_tests": "Đã có text trong câu hỏi → extract_key_points, không lookup/fetch."
+      },
+      "input": "Không cần tìm web. Rút 5 ý chính từ đoạn sau: The EU AI Act entered into force in 2024 and phases obligations by risk tier. High-risk systems need conformity assessments, logging, and human oversight. General-purpose AI models face transparency and systemic-risk rules. Providers must document training data summaries where required.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "extract_key_points",
+            "args": {
+              "max_points": 5
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "extract_key_points",
+            "args": {
+              "text": "The EU AI Act entered into force in 2024 and phases obligations by risk tier. High-risk systems need conformity assessments, logging, and human oversight. General-purpose AI models face transparency and systemic-risk rules. Providers must document training data summaries where required.",
+              "max_points": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "unnecessary_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "extract_key_points",
+          "args": {
+            "text": "The EU AI Act entered into force in 2024 and phases obligations by risk tier. High-risk systems need conformity assessments, logging, and human oversight. General-purpose AI models face transparency and systemic-risk rules. Providers must document training data summaries where required.",
+            "max_points": 5
+          },
+          "result": {
+            "tool": "extract_key_points",
+            "key_points": [
+              "The EU AI Act entered into force in 2024 and phases obligations by risk tier.",
+              "High-risk systems need conformity assessments, logging, and human oversight.",
+              "General-purpose AI models face transparency and systemic-risk rules.",
+              "Providers must document training data summaries where required."
+            ],
+            "source_count": 0,
+            "chars_analyzed": 287
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_source_credibility_url",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "credibility_arxiv_url",
+        "difficulty": "easy",
+        "what_it_tests": "Yêu cầu đánh giá tin cậy URL → source_credibility, không fetch."
+      },
+      "input": "Chấm độ tin cậy nguồn này giúp mình (không đọc thêm trang khác): https://arxiv.org/abs/2401.00001",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "source_credibility",
+            "args": {
+              "url": "https://arxiv.org/abs/2401.00001"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "source_credibility",
+            "args": {
+              "url": "https://arxiv.org/abs/2401.00001"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "source_credibility",
+          "args": {
+            "url": "https://arxiv.org/abs/2401.00001"
+          },
+          "result": {
+            "tool": "source_credibility",
+            "url": "https://arxiv.org/abs/2401.00001",
+            "source": "arxiv.org",
+            "rating": "high",
+            "score": 85,
+            "reasons": [
+              "Primary, academic, official, or research-oriented domain.",
+              "Uses HTTPS."
+            ],
+            "guidance": "Use high-rated sources for claims; corroborate medium/low sources before publishing."
+          }
+        }
+      ]
+    },
+    {
+      "id": "G03_compare_sources_inline",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "compare_inline_items",
+        "difficulty": "medium",
+        "what_it_tests": "User đã mô tả ≥2 nguồn → compare_sources, không lookup."
+      },
+      "input": "So sánh hai nguồn sau (không search thêm): (1) Title: OpenAI GPT-5 blog. Summary: OpenAI claims better reasoning and coding. URL: https://openai.com/blog/gpt-5. (2) Title: Anthropic safety update. Summary: Anthropic reports benchmark gains on harmlessness. URL: https://www.anthropic.com/news. Cho biết điểm chung và khác biệt.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "compare_sources",
+            "args": {}
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "compare_sources",
+            "args": {
+              "items": [
+                {
+                  "content": "OpenAI claims better reasoning and coding.",
+                  "url": "https://openai.com/blog/gpt-5",
+                  "summary": "OpenAI claims better reasoning and coding.",
+                  "source": "OpenAI GPT-5 blog",
+                  "title": "OpenAI GPT-5 blog"
+                },
+                {
+                  "content": "Anthropic reports benchmark gains on harmlessness.",
+                  "url": "https://www.anthropic.com/news",
+                  "summary": "Anthropic reports benchmark gains on harmlessness.",
+                  "source": "Anthropic safety update",
+                  "title": "Anthropic safety update"
+                }
+              ],
+              "question": "Cho biết điểm chung và khác biệt giữa hai nguồn này."
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "compare_sources",
+          "args": {
+            "items": [
+              {
+                "content": "OpenAI claims better reasoning and coding.",
+                "url": "https://openai.com/blog/gpt-5",
+                "summary": "OpenAI claims better reasoning and coding.",
+                "source": "OpenAI GPT-5 blog",
+                "title": "OpenAI GPT-5 blog"
+              },
+              {
+                "content": "Anthropic reports benchmark gains on harmlessness.",
+                "url": "https://www.anthropic.com/news",
+                "summary": "Anthropic reports benchmark gains on harmlessness.",
+                "source": "Anthropic safety update",
+                "title": "Anthropic safety update"
+              }
+            ],
+            "question": "Cho biết điểm chung và khác biệt giữa hai nguồn này."
+          },
+          "result": {
+            "tool": "compare_sources",
+            "question": "Cho biết điểm chung và khác biệt giữa hai nguồn này.",
+            "source_count": 2,
+            "agreements": [],
+            "differences": [
+              {
+                "source": "OpenAI GPT-5 blog",
+                "url": "https://openai.com/blog/gpt-5",
+                "distinct_terms": [
+                  "better",
+                  "blog",
+                  "claims",
+                  "coding",
+                  "gpt",
+                  "openai",
+                  "reasoning"
+                ]
+              },
+              {
+                "source": "Anthropic safety update",
+                "url": "https://www.anthropic.com/news",
+                "distinct_terms": [
+                  "anthropic",
+                  "benchmark",
+                  "gains",
+                  "harmlessness",
+                  "reports",
+                  "safety",
+                  "update"
+                ]
+              }
+            ],
+            "comparison_note": "This is a lexical comparison for research triage; verify claims before publication."
+          }
+        }
+      ]
+    },
+    {
+      "id": "G04_reference_builder_apa",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "reference_apa_style",
+        "difficulty": "medium",
+        "what_it_tests": "Bibliography APA từ metadata user đưa → reference_builder style=apa."
+      },
+      "input": "Tạo danh mục tham chiếu APA từ metadata sau (không tìm web): Title: Attention Is All You Need; Authors: Vaswani, Shazeer, Parmar; Year: 2017; URL: https://arxiv.org/abs/1706.03762",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "reference_builder",
+            "args": {
+              "style": "apa"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "reference_builder",
+            "args": {
+              "style": "apa",
+              "items": [
+                {
+                  "author": "Vaswani, Shazeer, Parmar",
+                  "title": "Attention Is All You Need",
+                  "authors": [
+                    "Vaswani",
+                    "Shazeer",
+                    "Parmar"
+                  ],
+                  "year": "2017",
+                  "url": "https://arxiv.org/abs/1706.03762"
+                }
+              ],
+              "title": "Danh mục tài liệu tham khảo"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "reference_builder",
+          "args": {
+            "style": "apa",
+            "items": [
+              {
+                "author": "Vaswani, Shazeer, Parmar",
+                "title": "Attention Is All You Need",
+                "authors": [
+                  "Vaswani",
+                  "Shazeer",
+                  "Parmar"
+                ],
+                "year": "2017",
+                "url": "https://arxiv.org/abs/1706.03762"
+              }
+            ],
+            "title": "Danh mục tài liệu tham khảo"
+          },
+          "result": {
+            "tool": "reference_builder",
+            "style": "apa",
+            "title": "Danh mục tài liệu tham khảo",
+            "item_count": 1,
+            "references": [
+              "Vaswani, Shazeer, & Parmar (2017). Attention Is All You Need. https://arxiv.org/abs/1706.03762"
+            ],
+            "metadata": [
+              {
+                "index": 0,
+                "title": "Attention Is All You Need",
+                "year": "2017",
+                "source": "",
+                "url": "https://arxiv.org/abs/1706.03762",
+                "doi": ""
+              }
+            ],
+            "markdown": "## Danh mục tài liệu tham khảo\n\n1. Vaswani, Shazeer, & Parmar (2017). Attention Is All You Need. https://arxiv.org/abs/1706.03762"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G05_extract_max_points_arg",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "extract_max_points",
+        "difficulty": "easy",
+        "what_it_tests": "'3 ý chính' → extract_key_points với max_points=3."
+      },
+      "input": "Chỉ rút đúng 3 ý chính từ text này, không gọi tool tìm kiếm: Large language models can follow instructions but may hallucinate facts. Retrieval-augmented generation reduces hallucination by grounding answers in retrieved passages. Evaluation should measure both fluency and citation accuracy.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "extract_key_points",
+            "args": {
+              "max_points": 3
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "extract_key_points",
+            "args": {
+              "text": "Large language models can follow instructions but may hallucinate facts. Retrieval-augmented generation reduces hallucination by grounding answers in retrieved passages. Evaluation should measure both fluency and citation accuracy.",
+              "max_points": 3
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "extract_key_points",
+          "args": {
+            "text": "Large language models can follow instructions but may hallucinate facts. Retrieval-augmented generation reduces hallucination by grounding answers in retrieved passages. Evaluation should measure both fluency and citation accuracy.",
+            "max_points": 3
+          },
+          "result": {
+            "tool": "extract_key_points",
+            "key_points": [
+              "Large language models can follow instructions but may hallucinate facts.",
+              "Retrieval-augmented generation reduces hallucination by grounding answers in retrieved passages.",
+              "Evaluation should measure both fluency and citation accuracy."
+            ],
+            "source_count": 0,
+            "chars_analyzed": 231
+          }
+        }
+      ]
+    },
+    {
+      "id": "G06_multiturn_compare_sources",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_compare_carry",
+        "difficulty": "hard",
+        "what_it_tests": "3 turns: carry 2 nguồn từ context → compare_sources, không lookup."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Nguồn A: EU publishes AI Act compliance guide for deployers. URL https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai"
+        },
+        {
+          "role": "user",
+          "content": "Nguồn B: UK ICO warns on unlawful scraping for generative AI training. URL https://ico.org.uk/about-the-ico/media-centre/news-and-blogs/"
+        },
+        {
+          "role": "user",
+          "content": "So sánh hai nguồn vừa mô tả — điểm giống và khác, không tìm thêm trên web"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "compare_sources",
+            "args": {}
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "compare_sources",
+            "args": {
+              "question": "So sánh điểm giống và khác nhau giữa hai nguồn về quản lý AI và bảo vệ dữ liệu.",
+              "items": [
+                {
+                  "content": "EU publishes AI Act compliance guide for deployers.",
+                  "summary": "EU publishes AI Act compliance guide for deployers.",
+                  "title": "EU AI Act compliance guide for deployers",
+                  "source": "Nguồn A",
+                  "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai"
+                },
+                {
+                  "summary": "UK ICO warns on unlawful scraping for generative AI training.",
+                  "title": "UK ICO warns on unlawful scraping for generative AI training",
+                  "content": "UK ICO warns on unlawful scraping for generative AI training.",
+                  "url": "https://ico.org.uk/about-the-ico/media-centre/news-and-blogs/",
+                  "source": "Nguồn B"
+                }
+              ]
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "compare_sources",
+          "args": {
+            "question": "So sánh điểm giống và khác nhau giữa hai nguồn về quản lý AI và bảo vệ dữ liệu.",
+            "items": [
+              {
+                "content": "EU publishes AI Act compliance guide for deployers.",
+                "summary": "EU publishes AI Act compliance guide for deployers.",
+                "title": "EU AI Act compliance guide for deployers",
+                "source": "Nguồn A",
+                "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai"
+              },
+              {
+                "summary": "UK ICO warns on unlawful scraping for generative AI training.",
+                "title": "UK ICO warns on unlawful scraping for generative AI training",
+                "content": "UK ICO warns on unlawful scraping for generative AI training.",
+                "url": "https://ico.org.uk/about-the-ico/media-centre/news-and-blogs/",
+                "source": "Nguồn B"
+              }
+            ]
+          },
+          "result": {
+            "tool": "compare_sources",
+            "question": "So sánh điểm giống và khác nhau giữa hai nguồn về quản lý AI và bảo vệ dữ liệu.",
+            "source_count": 2,
+            "agreements": [
+              "ai"
+            ],
+            "differences": [
+              {
+                "source": "Nguồn A",
+                "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+                "distinct_terms": [
+                  "act",
+                  "compliance",
+                  "deployers",
+                  "eu",
+                  "guide",
+                  "publishes"
+                ]
+              },
+              {
+                "source": "Nguồn B",
+                "url": "https://ico.org.uk/about-the-ico/media-centre/news-and-blogs/",
+                "distinct_terms": [
+                  "generative",
+                  "ico",
+                  "scraping",
+                  "training",
+                  "uk",
+                  "unlawful",
+                  "warns"
+                ]
+              }
+            ],
+            "comparison_note": "This is a lexical comparison for research triage; verify claims before publication."
+          }
+        }
+      ]
+    },
+    {
+      "id": "G07_multiturn_credibility_url",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_credibility_carry_url",
+        "difficulty": "hard",
+        "what_it_tests": "3 turns: nhớ URL Nature → source_credibility, không fetch/lookup."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Mình muốn biết link này có đáng tin không"
+        },
+        {
+          "role": "user",
+          "content": "https://www.nature.com/articles/d41586-024-00001-0"
+        },
+        {
+          "role": "user",
+          "content": "Chỉ chấm độ tin cậy URL vừa gửi, không fetch và không search"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "source_credibility",
+            "args": {
+              "url": "https://www.nature.com/articles/d41586-024-00001-0"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "source_credibility",
+            "args": {
+              "source": "Nature",
+              "url": "https://www.nature.com/articles/d41586-024-00001-0"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "source_credibility",
+          "args": {
+            "source": "Nature",
+            "url": "https://www.nature.com/articles/d41586-024-00001-0"
+          },
+          "result": {
+            "tool": "source_credibility",
+            "url": "https://www.nature.com/articles/d41586-024-00001-0",
+            "source": "Nature",
+            "rating": "high",
+            "score": 85,
+            "reasons": [
+              "Primary, academic, official, or research-oriented domain.",
+              "Uses HTTPS."
+            ],
+            "guidance": "Use high-rated sources for claims; corroborate medium/low sources before publishing."
+          }
+        }
+      ]
+    },
+    {
+      "id": "G08_multiturn_extract_limit",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_extract_max_points",
+        "difficulty": "hard",
+        "what_it_tests": "3 turns: carry text + sửa max_points=2."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Đoạn cần phân tích: Federated learning trains models across devices without centralizing raw data. It reduces privacy risk but adds communication overhead and straggler nodes."
+        },
+        {
+          "role": "user",
+          "content": "Rút 2 ý chính thôi"
+        },
+        {
+          "role": "user",
+          "content": "Vẫn từ đoạn text ở lượt đầu, không tìm web"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "extract_key_points",
+            "args": {
+              "max_points": 2
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "extract_key_points",
+            "args": {
+              "max_points": 2,
+              "text": "Federated learning trains models across devices without centralizing raw data. It reduces privacy risk but adds communication overhead and straggler nodes."
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "extract_key_points",
+          "args": {
+            "max_points": 2,
+            "text": "Federated learning trains models across devices without centralizing raw data. It reduces privacy risk but adds communication overhead and straggler nodes."
+          },
+          "result": {
+            "tool": "extract_key_points",
+            "key_points": [
+              "It reduces privacy risk but adds communication overhead and straggler nodes.",
+              "Federated learning trains models across devices without centralizing raw data."
+            ],
+            "source_count": 0,
+            "chars_analyzed": 155
+          }
+        }
+      ]
+    },
+    {
+      "id": "G09_multiturn_reference_ieee",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_reference_ieee",
+        "difficulty": "hard",
+        "what_it_tests": "3 turns: carry 2 paper metadata → reference_builder style=ieee."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Paper 1: BERT: Pre-training of Deep Bidirectional Transformers; Devlin et al.; 2018; https://arxiv.org/abs/1810.04805"
+        },
+        {
+          "role": "user",
+          "content": "Paper 2: Language Models are Few-Shot Learners; Brown et al.; 2020; https://arxiv.org/abs/2005.14165"
+        },
+        {
+          "role": "user",
+          "content": "Tạo danh mục tham chiếu IEEE cho hai paper trên, không search arXiv thêm"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "reference_builder",
+            "args": {
+              "style": "ieee"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "reference_builder",
+            "args": {
+              "items": [
+                {
+                  "title": "BERT: Pre-training of Deep Bidirectional Transformers",
+                  "year": "2018",
+                  "url": "https://arxiv.org/abs/1810.04805",
+                  "authors": [
+                    "Devlin et al."
+                  ]
+                },
+                {
+                  "authors": [
+                    "Brown et al."
+                  ],
+                  "url": "https://arxiv.org/abs/2005.14165",
+                  "title": "Language Models are Few-Shot Learners",
+                  "year": "2020"
+                }
+              ],
+              "style": "ieee",
+              "title": "Danh mục tham chiếu IEEE"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "reference_builder",
+          "args": {
+            "items": [
+              {
+                "title": "BERT: Pre-training of Deep Bidirectional Transformers",
+                "year": "2018",
+                "url": "https://arxiv.org/abs/1810.04805",
+                "authors": [
+                  "Devlin et al."
+                ]
+              },
+              {
+                "authors": [
+                  "Brown et al."
+                ],
+                "url": "https://arxiv.org/abs/2005.14165",
+                "title": "Language Models are Few-Shot Learners",
+                "year": "2020"
+              }
+            ],
+            "style": "ieee",
+            "title": "Danh mục tham chiếu IEEE"
+          },
+          "result": {
+            "tool": "reference_builder",
+            "style": "ieee",
+            "title": "Danh mục tham chiếu IEEE",
+            "item_count": 2,
+            "references": [
+              "Devlin et al., \"BERT: Pre-training of Deep Bidirectional Transformers,\" 2018. https://arxiv.org/abs/1810.04805",
+              "Brown et al., \"Language Models are Few-Shot Learners,\" 2020. https://arxiv.org/abs/2005.14165"
+            ],
+            "metadata": [
+              {
+                "index": 0,
+                "title": "BERT: Pre-training of Deep Bidirectional Transformers",
+                "year": "2018",
+                "source": "",
+                "url": "https://arxiv.org/abs/1810.04805",
+                "doi": ""
+              },
+              {
+                "index": 1,
+                "title": "Language Models are Few-Shot Learners",
+                "year": "2020",
+                "source": "",
+                "url": "https://arxiv.org/abs/2005.14165",
+                "doi": ""
+              }
+            ],
+            "markdown": "## Danh mục tham chiếu IEEE\n\n1. Devlin et al., \"BERT: Pre-training of Deep Bidirectional Transformers,\" 2018. https://arxiv.org/abs/1810.04805\n2. Brown et al., \"Language Models are Few-Shot Learners,\" 2020. https://arxiv.org/abs/2005.14165"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G10_multiturn_switch_to_credibility",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_switch_credibility",
+        "difficulty": "hard",
+        "what_it_tests": "3 turns: user đổi từ timeline sang source_credibility URL openai research."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Lấy tweet mới nhất của @sama về AGI"
+        },
+        {
+          "role": "user",
+          "content": "Thôi bỏ Twitter. Chỉ đánh giá độ tin cậy URL này: https://openai.com/research/"
+        },
+        {
+          "role": "user",
+          "content": "Đúng URL OpenAI research vừa nói, không dùng timeline"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "source_credibility",
+            "args": {
+              "url": "https://openai.com/research/"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "source_credibility",
+            "args": {
+              "url": "https://openai.com/research/",
+              "title": "OpenAI Research",
+              "source": "OpenAI"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "source_credibility",
+          "args": {
+            "url": "https://openai.com/research/",
+            "title": "OpenAI Research",
+            "source": "OpenAI"
+          },
+          "result": {
+            "tool": "source_credibility",
+            "url": "https://openai.com/research/",
+            "source": "OpenAI",
+            "rating": "high",
+            "score": 90,
+            "reasons": [
+              "Primary, academic, official, or research-oriented domain.",
+              "Uses HTTPS.",
+              "Has a title or named source context."
+            ],
+            "guidance": "Use high-rated sources for claims; corroborate medium/low sources before publishing."
+          }
+        }
+      ]
+    }
+  ]
+}

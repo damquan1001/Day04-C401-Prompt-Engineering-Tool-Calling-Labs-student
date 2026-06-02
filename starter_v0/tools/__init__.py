@@ -17,10 +17,7 @@ from .policy.tool import search_company_policy
 from .social_search.tool import search_tweets
 from .send.tool import send_telegram
 from .lookup.tool import web_search
-from .reference_builder.tool import reference_builder
-from .extract_key_points.tool import extract_key_points
-from .compare_sources.tool import compare_sources
-from .source_credibility.tool import source_credibility
+from .source_check.tool import check_sources
 
 
 # NOTE (starter_v0): tool names here are intentionally vague. These keys are the
@@ -39,10 +36,7 @@ TOOL_FUNCTIONS = {
     "policy": search_company_policy,
     "papers": arxiv_search,
     "paper_text": get_arxiv_paper_text,
-    "reference_builder": reference_builder,
-    "extract_key_points": extract_key_points,
-    "compare_sources": compare_sources,
-    "source_credibility": source_credibility,
+    "source_check": check_sources,
 }
 
 
