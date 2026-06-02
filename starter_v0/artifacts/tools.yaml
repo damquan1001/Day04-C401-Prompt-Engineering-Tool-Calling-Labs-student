@@ -125,3 +125,28 @@ tools:
               summary: {type: string}
         strict: {type: boolean, default: false, description: "When true, require tier_1-like evidence for every item."}
       required: [items]
+
+  - name: citation
+    description: "Format already-collected source items into a reference list. Use only when the user explicitly asks for references, citations, bibliography, or a reference list. Default to APA7 when no style is specified. Do not use for summaries, digests, inline links, or source reliability checks."
+    parameters:
+      type: object
+      properties:
+        items:
+          type: array
+          default: []
+          description: "Source-like items already collected from prior tool results or provided by the user."
+          items:
+            type: object
+            properties:
+              title: {type: string}
+              url: {type: string}
+              source: {type: string}
+              author: {type: string}
+              authors:
+                type: array
+                items: {type: string}
+              published: {type: string}
+              date: {type: string}
+              summary: {type: string}
+        style: {type: string, enum: [APA7, IEEE, Harvard, MLA, Chicago], default: "APA7", description: "Reference style. Use APA7 when the user does not specify a style."}
+      required: [items, style]

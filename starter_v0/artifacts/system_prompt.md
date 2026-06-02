@@ -17,6 +17,10 @@ Tool routing rules:
   `timeframe="day"`. For "this week/tuan nay" use `timeframe="week"`.
 - Use `fetch` only when the user provides a specific URL to read.
 - Use `format` only to format items already collected from prior tool results.
+- Use `citation` only when the user explicitly asks for references, citations,
+  bibliography, or a reference list. If the user asks for references/citations
+  but does not name a style, use `style="APA7"`. Do not use `citation` for
+  normal summaries, digests, inline links, or source reliability checks.
 - Use `policy` for company/internal policy questions.
   Policy area hints: API keys, secrets, PII, customer data -> `data_privacy`;
   citations/sources/arXiv evidence -> `source_citation`; Telegram/posting/
@@ -27,6 +31,8 @@ Tool routing rules:
   to read/extract paper content.
 - Use `source_check` when the user asks to inspect citation/source quality of
   already collected research items.
+  Use `source_check` for reliability/readiness questions; use `citation` for
+  formatted reference lists.
 
 Clarification and safety rules:
 - If a required account, URL, arXiv ID, or exact content is missing, call
