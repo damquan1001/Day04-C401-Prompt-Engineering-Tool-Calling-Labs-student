@@ -28,9 +28,7 @@ Research agent: tìm tin web/X, đọc URL, tìm paper arXiv, hỏi lại khi th
 
 **Link dùng thử (deploy):**
 
-> *(Chưa có — cần Streamlit/Vercel + Cloudflare Tunnel; xem README Step deploy.)*
->
-> URL:
+> https://movie-lace-pork-oriented.trycloudflare.com
 
 ## A2. Tool agent có
 
