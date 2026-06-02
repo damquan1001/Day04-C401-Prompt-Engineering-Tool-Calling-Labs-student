@@ -1,70 +1,61 @@
-# starter_v0 — tool declarations (intentionally vague).
-# Names and descriptions here are a rough first draft. Routing rules, name->handle
-# mapping, arg conventions (news/timeframe/Top), and the send-confirmation boundary
-# are NOT spelled out anywhere yet. Your job is to make these declarations + the
-# system prompt good enough that the agent routes correctly on the eval.
-#
-# If you rename a tool, keep the name in sync across:
-#   this file  ->  tools/__init__.py (TOOL_FUNCTIONS)  ->  data/eval_base.json + data/eval_research_extension.json
 tools:
-  # ---------------- Core tools ----------------
   - name: clarify
-    description: "Gửi một câu hỏi cho người dùng."
+    description: "Ask the user one clarifying question and wait for the next turn."
     parameters:
       type: object
       properties:
-        question: {type: string, default: "", description: "Câu hỏi"}
-        response_type: {type: string, enum: [text, yes_no, choice], default: "text", description: "Kiểu trả lời"}
-        options: {type: array, default: [], items: {type: string}, description: "Các lựa chọn"}
+        question: {type: string, default: "", description: "Question to ask the user"}
+        response_type: {type: string, enum: [text, yes_no, choice], default: "text", description: "Expected response type"}
+        options: {type: array, default: [], items: {type: string}, description: "Options for choice responses"}
       required: [question]
 
   - name: timeline
-    description: "Lấy các bài đăng gần đây."
+    description: "Get recent posts from a social account by screenname."
     parameters:
       type: object
       properties:
-        screenname: {type: string, default: "", description: "Tên tài khoản"}
-        limit: {type: integer, default: 5, description: "Số lượng"}
+        screenname: {type: string, default: "", description: "Account screenname without @"}
+        limit: {type: integer, default: 5, description: "Number of posts"}
       required: [screenname]
 
   - name: social_search
-    description: "Tìm trên mạng xã hội."
+    description: "Search social posts by keyword or topic."
     parameters:
       type: object
       properties:
-        query: {type: string, default: "", description: "Từ khóa"}
-        search_type: {type: string, enum: [Latest, Top], default: "Latest", description: "Cách sắp xếp"}
-        limit: {type: integer, default: 5, description: "Số lượng"}
+        query: {type: string, default: "", description: "Search query"}
+        search_type: {type: string, enum: [Latest, Top], default: "Latest", description: "Latest or Top results"}
+        limit: {type: integer, default: 5, description: "Number of posts"}
       required: [query]
 
   - name: lookup
-    description: "Tra cứu thông tin trên internet."
+    description: "Search the web for general or news information."
     parameters:
       type: object
       properties:
-        query: {type: string, default: "", description: "Truy vấn"}
-        topic: {type: string, enum: [general, news], default: "general", description: "Phân loại"}
-        timeframe: {type: string, enum: [day, week, month, year], default: "week", description: "Khoảng thời gian"}
-        max_results: {type: integer, default: 5, description: "Số kết quả"}
+        query: {type: string, default: "", description: "Search query"}
+        topic: {type: string, enum: [general, news], default: "general", description: "Search topic"}
+        timeframe: {type: string, enum: [day, week, month, year], default: "week", description: "Freshness window"}
+        max_results: {type: integer, default: 5, description: "Number of results"}
       required: [query]
 
   - name: fetch
-    description: "Lấy nội dung từ một địa chỉ."
+    description: "Read the contents of a specific URL."
     parameters:
       type: object
       properties:
-        url: {type: string, default: "", description: "Địa chỉ"}
+        url: {type: string, default: "", description: "URL to read"}
       required: [url]
 
   - name: format
-    description: "Trình bày dữ liệu đã có thành văn bản."
+    description: "Format already-collected items into a markdown digest."
     parameters:
       type: object
       properties:
         items:
           type: array
           default: []
-          description: "Danh sách item"
+          description: "Items to format"
           items:
             type: object
             properties:
@@ -73,46 +64,122 @@ tools:
               source: {type: string}
               summary: {type: string}
               section: {type: string}
-        template: {type: string, enum: [brief, sections, bullets, thread, daily_ai_vn], default: "sections", description: "Khuôn"}
-        headline: {type: string, default: "", description: "Tiêu đề"}
+        template: {type: string, enum: [brief, sections, bullets, thread, daily_ai_vn], default: "sections", description: "Output template"}
+        headline: {type: string, default: "", description: "Digest headline"}
       required: [items, template]
 
-  # ---------------- Bonus tools ----------------
-  - name: send
-    description: "Gửi một đoạn văn bản đi."
+  - name: reference_builder
+    description: "Build references from collected research items in APA, MLA, Chicago, IEEE, BibTeX, or plain format."
     parameters:
       type: object
       properties:
-        text: {type: string, default: "", description: "Nội dung"}
-        confirmed: {type: boolean, default: false, description: "Cờ xác nhận"}
+        items:
+          type: array
+          default: []
+          description: "Items to convert into references"
+          items:
+            type: object
+            properties:
+              title: {type: string}
+              authors: {type: array, items: {type: string}}
+              author: {type: string}
+              year: {type: string}
+              source: {type: string}
+              publisher: {type: string}
+              journal: {type: string}
+              url: {type: string}
+              doi: {type: string}
+        style: {type: string, enum: [apa, mla, chicago, ieee, bibtex, plain], default: "apa", description: "Reference style"}
+        include_urls: {type: boolean, default: true, description: "Include URLs when available"}
+        title: {type: string, default: "", description: "Heading for the reference list"}
+      required: [items, style]
+
+  - name: send
+    description: "Send text to Telegram only after the user explicitly confirms. If not confirmed, ask for confirmation first."
+    parameters:
+      type: object
+      properties:
+        text: {type: string, default: "", description: "Message text"}
+        confirmed: {type: boolean, default: false, description: "True only after explicit user confirmation"}
       required: [text]
 
   - name: policy
-    description: "Tìm trong tài liệu nội bộ."
+    description: "Search local company policy markdown."
     parameters:
       type: object
       properties:
-        query: {type: string, default: "", description: "Truy vấn"}
-        policy_area: {type: string, enum: [all, ai_research, source_citation, data_privacy, external_publishing, tool_usage], default: "all", description: "Nhóm"}
-        top_k: {type: integer, default: 3, description: "Số mục"}
+        query: {type: string, default: "", description: "Policy search query"}
+        policy_area: {type: string, enum: [all, ai_research, source_citation, data_privacy, external_publishing, tool_usage], default: "all", description: "Policy area"}
+        top_k: {type: integer, default: 3, description: "Number of results"}
       required: [query]
 
   - name: papers
-    description: "Tìm bài báo khoa học."
+    description: "Search arXiv papers."
     parameters:
       type: object
       properties:
-        query: {type: string, default: "", description: "Từ khóa"}
-        max_results: {type: integer, default: 5, description: "Số lượng"}
-        sort_by: {type: string, enum: [relevance, lastUpdatedDate, submittedDate], default: "relevance", description: "Sắp xếp"}
+        query: {type: string, default: "", description: "Paper search query"}
+        max_results: {type: integer, default: 5, description: "Number of papers"}
+        sort_by: {type: string, enum: [relevance, lastUpdatedDate, submittedDate], default: "relevance", description: "Sort mode"}
       required: [query]
 
   - name: paper_text
-    description: "Lấy nội dung text của một bài báo."
+    description: "Download an arXiv PDF and extract local text."
     parameters:
       type: object
       properties:
-        arxiv_url: {type: string, default: "", description: "ID hoặc địa chỉ"}
-        max_pages: {type: integer, default: 5, description: "Số trang"}
-        max_chars: {type: integer, default: 8000, description: "Số ký tự"}
+        arxiv_url: {type: string, default: "", description: "arXiv ID or URL"}
+        max_pages: {type: integer, default: 5, description: "Number of pages"}
+        max_chars: {type: integer, default: 8000, description: "Maximum characters"}
       required: [arxiv_url]
+
+  - name: extract_key_points
+    description: "Extract concise key points from long text or collected items."
+    parameters:
+      type: object
+      properties:
+        text: {type: string, default: "", description: "Raw text to analyze"}
+        items:
+          type: array
+          default: []
+          description: "Collected research items"
+          items:
+            type: object
+            properties:
+              title: {type: string}
+              summary: {type: string}
+              content: {type: string}
+        max_points: {type: integer, default: 5, description: "Maximum number of key points"}
+      required: []
+
+  - name: compare_sources
+    description: "Compare multiple collected sources and highlight shared and unique terms."
+    parameters:
+      type: object
+      properties:
+        items:
+          type: array
+          default: []
+          description: "Sources to compare"
+          items:
+            type: object
+            properties:
+              title: {type: string}
+              summary: {type: string}
+              content: {type: string}
+              url: {type: string}
+              source: {type: string}
+        question: {type: string, default: "", description: "Comparison question"}
+        max_sources: {type: integer, default: 4, description: "Maximum sources to compare"}
+      required: [items]
+
+  - name: source_credibility
+    description: "Score basic credibility signals for a source or URL."
+    parameters:
+      type: object
+      properties:
+        url: {type: string, default: "", description: "Source URL"}
+        source: {type: string, default: "", description: "Source label"}
+        title: {type: string, default: "", description: "Source title"}
+        evidence_text: {type: string, default: "", description: "Supporting excerpt text"}
+      required: []

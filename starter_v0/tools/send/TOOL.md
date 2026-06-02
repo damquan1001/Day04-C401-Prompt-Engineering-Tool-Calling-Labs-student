@@ -5,8 +5,9 @@ kind: action
 provider: Telegram Bot API
 requires_env: [TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID]
 inputs: [text, confirmed]
-outputs: [status]
+outputs: [status, question, awaiting_user]
 side_effect: true
+requires_confirmation: true
 ---
 # send
 
