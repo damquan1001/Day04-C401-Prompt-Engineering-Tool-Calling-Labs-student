@@ -1,8 +1,4 @@
-# Day 04 Lab v2 Report — Research Agent
-
-> File này gồm 2 phần, deadline khác nhau:
-> - **PHẦN A — Giới thiệu agent**: ngắn gọn 1 trang để team khác hiểu nhanh agent có tool gì, làm được gì, thử bằng câu hỏi nào. **Xong trước 16:30** để làm tài liệu phụ trợ khi demo. Có thể làm thành poster HTML/SVG (`artifacts/poster.html` / `poster.svg`) để show cho team cùng zone.
-> - **PHẦN B — Chi tiết / Bằng chứng**: bảng đầy đủ (v0–v3, failure, eval, chat) dựa trên log thật. **Có thể hoàn thiện sau buổi debate để nộp bài.**
+# Day 04 Lab v2 Report - Research Agent
 
 ## Team
 
@@ -14,9 +10,17 @@
 + Trần Hoàng Nam 2A202600870
 - Provider/model: Gemini / `gemini-3.5-flash`
 
----
+## Final Metrics
 
-# PHẦN A — Giới thiệu agent
+- Final version: `v3`
+- Final artifact_version: `v3+pc37db15027c7+tb50d674754d3`
+- Best base run file: `runs/v3_B_base_gemini_20260602T151429269177.json`
+- Base case accuracy: `1.0`
+- Base tool routing accuracy: `1.0`
+- Base argument accuracy: `1.0`
+- Group eval run file: `runs/v3_B_group_gemini_20260602T151301714070.json`
+- Group eval accuracy: `1.0`
+- Chat transcript file: `transcripts/v3_gemini_20260602T154258180252.transcript.json`
 
 ## A1. Agent này làm được gì
 
@@ -125,7 +129,7 @@ Lấy từ `results[*].result.failures` — chủ yếu **v0 baseline** (v3 base
 | arXiv/company policy | tools `papers`, `policy` trong `tools.yaml` | Có trong declaration | Cần API/key theo TOOL-SETUP |
 | UI | — | Chưa deploy | Cần Streamlit/Vercel + tunnel |
 
-## B6. Reflection
+## Reflection
 
 - **`system_prompt.md`:** clarify khi thiếu handle/URL; yes_no trước send; map tên → handle; routing lookup/fetch/social; đoạn **local tools** (một tool, không chain) cho 4 tool nhóm.
 - **`tools.yaml`:** Khai báo 4 formatter/local tools; mô tả ngắn giúp model chọn đúng tên tool.
