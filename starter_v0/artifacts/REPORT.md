@@ -18,7 +18,7 @@
 - Base case accuracy: `1.0`
 - Base tool routing accuracy: `1.0`
 - Base argument accuracy: `1.0`
-- Group eval run file: `runs/v3_B_group_gemini_20260602T151301714070.json`
+- Group eval run file: `runs/v2_B_group_gemini_20260602T155229890587.json`
 - Group eval accuracy: `1.0`
 - Chat transcript file: `transcripts/v3_gemini_20260602T154258180252.transcript.json`
 
@@ -113,19 +113,21 @@ Lấy từ `results[*].result.failures` — chủ yếu **v0 baseline** (v3 base
 
 ## B4. Live Chat Evidence
 
-> *(Chưa có — chạy `python chat.py --provider gemini --version v3` và lưu `transcripts/*.transcript.json`.)*
+Nguồn: `transcripts/v3_gemini_20260602T154258180252.transcript.json`.
 
 | Turn | User Request | Tool Calls | Version Evidence | Outcome |
 |---|---|---|---|---|
-| — | — | — | — | — |
+| 1 | Tin AI hôm nay có gì nổi bật? | `lookup` + `format` | v3 base | Trả về digest tin AI theo nhóm chủ đề. |
+| 2 | Tóm tắt 5 tweet mới nhất giúp mình | `social_search` + `format` | v3 base | Trả về bản tóm tắt tweet. |
+| 3 | Đăng bản tin này lên Telegram giúp mình | `clarify` (yes/no) | v3 base | Chặn gửi cho tới khi user xác nhận. |
 
 ## B5. Bonus Evidence
 
 | Bonus | Evidence File | What Worked | Risk / Guardrail |
 |---|---|---|---|
-| send (Telegram) | `runs/v3_B_base_gemini_...` (R12 PASS) | yes_no `clarify` trước send | Chỉ gửi khi user confirm |
-| arXiv/company policy | tools `papers`, `policy` trong `tools.yaml` | Có trong declaration | Cần API/key theo TOOL-SETUP |
-| UI | — | Chưa deploy | Cần Streamlit/Vercel + tunnel |
+| send (Telegram) | `runs/v3_B_base_gemini_20260602T150620645041.json` | yes/no `clarify` trước `send` | Chỉ gửi khi user confirm |
+| policy / papers / paper_text | `artifacts/tools.yaml`, `tools/__init__.py` | Các tool đã được declare và wire | Cần env/provider thật để chạy đầy đủ |
+| UI | `ui_app.py`, `https://movie-lace-pork-oriented.trycloudflare.com` | Streamlit local UI + Cloudflare Tunnel | Link tunnel là tạm thời theo phiên |
 
 ## Reflection
 
