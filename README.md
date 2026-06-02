@@ -1,3 +1,9 @@
+Lê Đàm Quân 2A202600930
+Nguyễn Tiến Đạt 2A202600595
+Trần Nguyễn Đăng Khoa 2A202600922
+Trần Hoàng Nam 2A202600870
+
+
 # Day 04 Lab v2 — Research Agent Tool Eval
 
 ## Brief
