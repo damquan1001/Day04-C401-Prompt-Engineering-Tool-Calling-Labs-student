@@ -1,7 +1,234 @@
 {
   "dataset_id": "day04_v2_research_group",
   "dataset_role": "group",
-  "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
+  "description": "Eval nhóm cho 4 tool mới: extract_key_points, compare_sources, reference_builder, source_credibility. Mỗi case phase=B, một tool call mong đợi (không chain lookup/fetch). 5 single-turn + 5 multi-turn.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_extract_key_points_text",
+      "phase": "B",
+      "query": "Không cần tìm web. Rút 5 ý chính từ đoạn sau: The EU AI Act entered into force in 2024 and phases obligations by risk tier. High-risk systems need conformity assessments, logging, and human oversight. General-purpose AI models face transparency and systemic-risk rules. Providers must document training data summaries where required.",
+      "failure_type": "unnecessary_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "extract_key_points",
+            "args": {
+              "max_points": 5
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "skill": "extract_from_pasted_text",
+        "difficulty": "easy",
+        "what_it_tests": "Đã có text trong câu hỏi → extract_key_points, không lookup/fetch."
+      }
+    },
+    {
+      "id": "G02_source_credibility_url",
+      "phase": "B",
+      "query": "Chấm độ tin cậy nguồn này giúp mình (không đọc thêm trang khác): https://arxiv.org/abs/2401.00001",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "source_credibility",
+            "args": {
+              "url": "https://arxiv.org/abs/2401.00001"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "skill": "credibility_arxiv_url",
+        "difficulty": "easy",
+        "what_it_tests": "Yêu cầu đánh giá tin cậy URL → source_credibility, không fetch."
+      }
+    },
+    {
+      "id": "G03_compare_sources_inline",
+      "phase": "B",
+      "query": "So sánh hai nguồn sau (không search thêm): (1) Title: OpenAI GPT-5 blog. Summary: OpenAI claims better reasoning and coding. URL: https://openai.com/blog/gpt-5. (2) Title: Anthropic safety update. Summary: Anthropic reports benchmark gains on harmlessness. URL: https://www.anthropic.com/news. Cho biết điểm chung và khác biệt.",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "compare_sources",
+            "args": {}
+          }
+        ]
+      },
+      "metadata": {
+        "skill": "compare_inline_items",
+        "difficulty": "medium",
+        "what_it_tests": "User đã mô tả ≥2 nguồn → compare_sources, không lookup."
+      }
+    },
+    {
+      "id": "G04_reference_builder_apa",
+      "phase": "B",
+      "query": "Tạo danh mục tham chiếu APA từ metadata sau (không tìm web): Title: Attention Is All You Need; Authors: Vaswani, Shazeer, Parmar; Year: 2017; URL: https://arxiv.org/abs/1706.03762",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "reference_builder",
+            "args": {
+              "style": "apa"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "skill": "reference_apa_style",
+        "difficulty": "medium",
+        "what_it_tests": "Bibliography APA từ metadata user đưa → reference_builder style=apa."
+      }
+    },
+    {
+      "id": "G05_extract_max_points_arg",
+      "phase": "B",
+      "query": "Chỉ rút đúng 3 ý chính từ text này, không gọi tool tìm kiếm: Large language models can follow instructions but may hallucinate facts. Retrieval-augmented generation reduces hallucination by grounding answers in retrieved passages. Evaluation should measure both fluency and citation accuracy.",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "extract_key_points",
+            "args": {
+              "max_points": 3
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "skill": "extract_max_points",
+        "difficulty": "easy",
+        "what_it_tests": "'3 ý chính' → extract_key_points với max_points=3."
+      }
+    },
+    {
+      "id": "G06_multiturn_compare_sources",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Nguồn A: EU publishes AI Act compliance guide for deployers. URL https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai"},
+        {"role": "user", "content": "Nguồn B: UK ICO warns on unlawful scraping for generative AI training. URL https://ico.org.uk/about-the-ico/media-centre/news-and-blogs/"},
+        {"role": "user", "content": "So sánh hai nguồn vừa mô tả — điểm giống và khác, không tìm thêm trên web"}
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "compare_sources",
+            "args": {}
+          }
+        ]
+      },
+      "metadata": {
+        "skill": "multiturn_compare_carry",
+        "difficulty": "hard",
+        "what_it_tests": "3 turns: carry 2 nguồn từ context → compare_sources, không lookup."
+      }
+    },
+    {
+      "id": "G07_multiturn_credibility_url",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Mình muốn biết link này có đáng tin không"},
+        {"role": "user", "content": "https://www.nature.com/articles/d41586-024-00001-0"},
+        {"role": "user", "content": "Chỉ chấm độ tin cậy URL vừa gửi, không fetch và không search"}
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "source_credibility",
+            "args": {
+              "url": "https://www.nature.com/articles/d41586-024-00001-0"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "skill": "multiturn_credibility_carry_url",
+        "difficulty": "hard",
+        "what_it_tests": "3 turns: nhớ URL Nature → source_credibility, không fetch/lookup."
+      }
+    },
+    {
+      "id": "G08_multiturn_extract_limit",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Đoạn cần phân tích: Federated learning trains models across devices without centralizing raw data. It reduces privacy risk but adds communication overhead and straggler nodes."},
+        {"role": "user", "content": "Rút 2 ý chính thôi"},
+        {"role": "user", "content": "Vẫn từ đoạn text ở lượt đầu, không tìm web"}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "extract_key_points",
+            "args": {
+              "max_points": 2
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "skill": "multiturn_extract_max_points",
+        "difficulty": "hard",
+        "what_it_tests": "3 turns: carry text + sửa max_points=2."
+      }
+    },
+    {
+      "id": "G09_multiturn_reference_ieee",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Paper 1: BERT: Pre-training of Deep Bidirectional Transformers; Devlin et al.; 2018; https://arxiv.org/abs/1810.04805"},
+        {"role": "user", "content": "Paper 2: Language Models are Few-Shot Learners; Brown et al.; 2020; https://arxiv.org/abs/2005.14165"},
+        {"role": "user", "content": "Tạo danh mục tham chiếu IEEE cho hai paper trên, không search arXiv thêm"}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "reference_builder",
+            "args": {
+              "style": "ieee"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "skill": "multiturn_reference_ieee",
+        "difficulty": "hard",
+        "what_it_tests": "3 turns: carry 2 paper metadata → reference_builder style=ieee."
+      }
+    },
+    {
+      "id": "G10_multiturn_switch_to_credibility",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Lấy tweet mới nhất của @sama về AGI"},
+        {"role": "user", "content": "Thôi bỏ Twitter. Chỉ đánh giá độ tin cậy URL này: https://openai.com/research/"},
+        {"role": "user", "content": "Đúng URL OpenAI research vừa nói, không dùng timeline"}
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "source_credibility",
+            "args": {
+              "url": "https://openai.com/research/"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "skill": "multiturn_switch_credibility",
+        "difficulty": "hard",
+        "what_it_tests": "3 turns: user đổi từ timeline sang source_credibility URL openai research."
+      }
+    }
+  ]
 }
